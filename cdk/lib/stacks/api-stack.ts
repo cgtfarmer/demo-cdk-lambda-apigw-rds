@@ -38,7 +38,7 @@ export class ApiStack extends Stack {
       vpc: props.vpc,
       runtime: Runtime.NODEJS_18_X,
       handler: 'index.handler',
-      entry: join(__dirname, '../../../src/index.ts'),
+      entry: join(__dirname, '../../../src/user-service/index.ts'),
       bundling: {
         nodeModules: ['@types/aws-lambda'],
       },
