@@ -16,11 +16,11 @@ public class LambdaParameterSecretClient {
 
   private static String secretAccessUrl = "http://localhost:2773/secretsmanager/get";
 
-  public HttpClient httpClient;
+  private final HttpClient httpClient;
 
-  public ObjectMapper mapper;
+  private final ObjectMapper mapper;
 
-  public LambdaLogger logger;
+  private final LambdaLogger logger;
 
   public LambdaParameterSecretClient(LambdaLogger logger, HttpClient httpClient, ObjectMapper mapper) {
     this.logger = logger;

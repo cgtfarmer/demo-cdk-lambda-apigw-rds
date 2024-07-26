@@ -8,11 +8,11 @@ import java.io.IOException;
 
 public class SecretAccessor {
 
-  private LambdaLogger logger;
+  private final LambdaLogger logger;
 
-  private ObjectMapper mapper;
+  private final ObjectMapper mapper;
 
-  private LambdaParameterSecretClient lambdaParameterSecretClient;
+  private final LambdaParameterSecretClient lambdaParameterSecretClient;
 
   public SecretAccessor(
       LambdaLogger logger,

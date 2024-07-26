@@ -8,9 +8,9 @@ import java.io.IOException;
 
 public class LiquibaseConfigFactory {
 
-  private EnvironmentAccessor environmentAccessor;
+  private final EnvironmentAccessor environmentAccessor;
 
-  private SecretAccessor secretAccessor;
+  private final SecretAccessor secretAccessor;
 
   public LiquibaseConfigFactory(
       EnvironmentAccessor environmentAccessor,
