@@ -1,0 +1,25 @@
+package com.cgtfarmer.demo;
+
+import com.cgtfarmer.demo.accessor.EnvironmentAccessor;
+import com.cgtfarmer.demo.config.LiquibaseConfiguration;
+import com.cgtfarmer.demo.factory.LiquibaseCliCommandFactory;
+import com.cgtfarmer.demo.factory.LiquibaseConfigFactory;
+import liquibase.integration.commandline.LiquibaseCommandLine;
+
+public class DemoApplication {
+
+	public static void main(String[] args) throws Exception {
+    System.out.println("Hello, world!");
+
+    EnvironmentAccessor environmentAccessor = new EnvironmentAccessor();
+
+    LiquibaseConfiguration config = new LiquibaseConfigFactory(environmentAccessor).create();
+
+    String[] command = new LiquibaseCliCommandFactory(config).update();
+
+    LiquibaseCommandLine cli = new LiquibaseCommandLine();
+    int returnCode = cli.execute(command);
+
+    System.out.println("Return Code: " + returnCode);
+  }
+}

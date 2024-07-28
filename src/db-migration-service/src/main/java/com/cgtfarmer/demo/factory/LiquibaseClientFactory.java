@@ -1,20 +1,17 @@
 package com.cgtfarmer.demo.factory;
 
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.cgtfarmer.demo.config.LiquibaseConfiguration;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import liquibase.Liquibase;
-import liquibase.database.Database;
-import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.DatabaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 
 public class LiquibaseClientFactory {
 
-  public Liquibase create(LiquibaseConfiguration liquibaseConfiguration)
-      throws DatabaseException, SQLException {
+  public Liquibase create(LambdaLogger logger, LiquibaseConfiguration liquibaseConfiguration)
+      throws Exception {
 
     Connection conn = DriverManager.getConnection(
         liquibaseConfiguration.getUrl(),
@@ -22,13 +19,10 @@ public class LiquibaseClientFactory {
         liquibaseConfiguration.getPassword()
     );
 
-    Database database = DatabaseFactory.getInstance()
-        .findCorrectDatabaseImplementation(new JdbcConnection(conn));
-
     Liquibase liquibaseClient = new Liquibase(
         liquibaseConfiguration.getChangelogFilepath(),
         new ClassLoaderResourceAccessor(),
-        database
+        new JdbcConnection(conn)
     );
 
     return liquibaseClient;

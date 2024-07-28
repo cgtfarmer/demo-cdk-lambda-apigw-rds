@@ -118,7 +118,7 @@ export class DbStack extends Stack {
       environment: {
         DB_JDBC_URL: `jdbc:postgresql://${this.rdsProxy.endpoint}:${this.rdsPort}/${this.rdsDbName}`,
         DB_CREDS_SECRET_ID: this.rdsSecret.secretName,
-        DB_CHANGELOG_FILE: 'db/db.changelog-root.yaml',
+        DB_CHANGELOG_FILE: 'db/db.changelog-root.yml',
       },
       memorySize: 1024,
       timeout: Duration.seconds(30),

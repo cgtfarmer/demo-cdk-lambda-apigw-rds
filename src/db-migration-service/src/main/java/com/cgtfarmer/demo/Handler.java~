@@ -7,11 +7,19 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.CloudFormationCustomResourceEvent;
 import com.cgtfarmer.demo.config.DependencyGraph;
 import com.cgtfarmer.demo.config.DependencyGraphFactory;
+import com.cgtfarmer.demo.config.LambdaLogService;
+import com.cgtfarmer.demo.config.LambdaLoggerAdapter;
 import com.cgtfarmer.demo.config.LiquibaseConfiguration;
 import com.cgtfarmer.demo.dto.AsyncLambdaResponse;
 import com.cgtfarmer.demo.exception.ExceptionUtils;
-import com.cgtfarmer.demo.factory.LiquibaseCliCommandFactory;
-import liquibase.integration.commandline.LiquibaseCommandLine;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import liquibase.Contexts;
+import liquibase.LabelExpression;
+import liquibase.Liquibase;
+import liquibase.Scope;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.resource.ClassLoaderResourceAccessor;
 
 /**
  * Lambda Handler.
@@ -31,7 +39,6 @@ public class Handler implements RequestHandler<CloudFormationCustomResourceEvent
 
     logger.log("Hello, world!");
 
-    int returnCode = 0;
     try {
       DependencyGraph graph = new DependencyGraphFactory().create(logger);
 
@@ -40,53 +47,34 @@ public class Handler implements RequestHandler<CloudFormationCustomResourceEvent
 
       // Liquibase liquibaseClient = graph.getLiquibaseClient();
 
-      LiquibaseConfiguration liquibaseConfiguration = graph.getLiquibaseConfiguration();
 
-      String[] command = new LiquibaseCliCommandFactory(liquibaseConfiguration).update();
+      LiquibaseConfiguration liquibaseConfiguration = graph.getLiquibaseConfiguration();
 
       Class.forName("org.postgresql.Driver");
 
-      LiquibaseCommandLine cli = new LiquibaseCommandLine();
-      returnCode = cli.execute(command);
+      Scope.child(Scope.Attr.logService.name(), new LambdaLogService(logger), () -> {
+        Connection conn = DriverManager.getConnection(
+            liquibaseConfiguration.getUrl(),
+            liquibaseConfiguration.getUsername(),
+            liquibaseConfiguration.getPassword()
+        );
 
-      logger.log("Return Code: " + returnCode);
+        Liquibase liquibaseClient = new Liquibase(
+            liquibaseConfiguration.getChangelogFilepath(),
+            new ClassLoaderResourceAccessor(),
+            new JdbcConnection(conn)
+        );
 
-      // Class.forName("org.postgresql.Driver");
+        liquibaseClient.update(new Contexts(), new LabelExpression());
 
-      // Scope.child(Scope.Attr.logService.name(), new LambdaLogService(logger), () -> {
-      //   Connection conn = DriverManager.getConnection(
-      //       liquibaseConfiguration.getUrl(),
-      //       liquibaseConfiguration.getUsername(),
-      //       liquibaseConfiguration.getPassword()
-      //   );
-
-      //   Liquibase liquibaseClient = new Liquibase(
-      //       liquibaseConfiguration.getChangelogFilepath(),
-      //       new ClassLoaderResourceAccessor(),
-      //       new JdbcConnection(conn)
-      //   );
-
-      //   liquibaseClient.update(new Contexts(), new LabelExpression());
-
-      //   liquibaseClient.close();
-      // });
+        liquibaseClient.close();
+      });
     } catch (Exception e) {
       logger.log("DB migration failed: " + ExceptionUtils.mapStackTraceToString(e));
 
       AsyncLambdaResponse response = AsyncLambdaResponse.builder()
           .Status("FAILED")
           .Reason(e.getMessage())
-          .build();
-
-      logger.log(response.toString());
-
-      return response;
-    }
-
-    if (returnCode != 0) {
-      AsyncLambdaResponse response = AsyncLambdaResponse.builder()
-          .Status("FAILED")
-          .Reason("Return code reported a failure: " + returnCode)
           .build();
 
       logger.log(response.toString());
