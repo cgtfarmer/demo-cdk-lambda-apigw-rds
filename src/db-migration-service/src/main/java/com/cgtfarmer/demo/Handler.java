@@ -34,9 +34,6 @@ public class Handler implements RequestHandler<CloudFormationCustomResourceEvent
     try {
       DependencyGraph graph = new DependencyGraphFactory().create(logger);
 
-      logger.log("--- Liquibase Config:");
-      logger.log(graph.getLiquibaseConfiguration().toString());
-
       Liquibase liquibaseClient = graph.getLiquibaseClient();
 
       liquibaseClient.update(new Contexts(), new LabelExpression());

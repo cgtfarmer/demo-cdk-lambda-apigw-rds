@@ -4,7 +4,6 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.cgtfarmer.demo.accessor.EnvironmentAccessor;
 import com.cgtfarmer.demo.accessor.LambdaParameterSecretClient;
 import com.cgtfarmer.demo.accessor.SecretAccessor;
-import com.cgtfarmer.demo.exception.ExceptionUtils;
 import com.cgtfarmer.demo.factory.LiquibaseClientFactory;
 import com.cgtfarmer.demo.factory.LiquibaseConfigFactory;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -35,7 +34,6 @@ public class DependencyGraphFactory {
         new LambdaParameterSecretClient(logger, httpClient, objectMapper);
 
     SecretAccessor secretAccessor = new SecretAccessor(
-        logger,
         objectMapper,
         lambdaParameterSecretClient
     );
@@ -44,14 +42,6 @@ public class DependencyGraphFactory {
         environmentAccessor,
         secretAccessor
     ).create();
-
-    logger.log("Liquibase Configuration: " + liquibaseConfiguration.toString());
-
-    try {
-      Class.forName("org.postgresql.Driver");
-    } catch (ClassNotFoundException e) {
-      logger.log("Could not load PostgreSQL Driver: " + ExceptionUtils.mapStackTraceToString(e));
-    }
 
     Liquibase liquibaseClient = new LiquibaseClientFactory().create(liquibaseConfiguration);
 

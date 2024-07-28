@@ -8,7 +8,5 @@ import lombok.Getter;
 @Builder
 public class DependencyGraph {
 
-  private LiquibaseConfiguration liquibaseConfiguration;
-
   private Liquibase liquibaseClient;
 }
