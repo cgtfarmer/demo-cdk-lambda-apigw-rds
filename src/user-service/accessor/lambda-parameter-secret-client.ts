@@ -1,10 +1,10 @@
-import SecretsManagerResponse from '../dto/SecretsManagerResponse';
+import SecretsManagerResponse from '../dto/secrets-manager-response';
 
 export default class LambdaParameterSecretClient {
 
   private static tokenHeaderKey = 'X-Aws-Parameters-Secrets-Token';
 
-  private static secretAccessUrl = 'localhost:2773/secretsmanager/get';
+  private static secretAccessUrl = 'http://localhost:2773/secretsmanager/get';
 
   public readonly headers: Headers;
 

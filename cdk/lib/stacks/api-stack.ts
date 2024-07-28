@@ -51,12 +51,16 @@ export class ApiStack extends Stack {
         DB_CREDS_SECRET_ID: props.rdsSecret.secretName,
         DB_DATABASE_NAME: props.rdsDbName,
       },
+      memorySize: 256,
+      timeout: Duration.seconds(20),
       paramsAndSecrets: paramsAndSecrets,
     });
 
     props.rdsSecret.grantRead(demoLambda);
     props.rdsProxy.grantConnect(demoLambda);
+    // This direction is incorrect due to causing cyclic dependencies
     // props.rdsProxy.connections.allowFrom(demoLambda, Port.POSTGRES);
+    demoLambda.connections.allowTo(props.rdsProxy, Port.POSTGRES);
 
     const demoLambdaIntegration =
       new HttpLambdaIntegration('DemoLambdaIntegration', demoLambda);

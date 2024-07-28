@@ -1,7 +1,7 @@
 import { ClientConfig } from 'pg';
 import EnvironmentAccessor from '../accessor/environment-accessor';
 import LambdaParameterSecretClient from '../accessor/lambda-parameter-secret-client';
-import DbSecret from '../dto/DbSecret';
+import DbSecret from '../dto/db-secret';
 
 export default class DatabaseConfigFactory {
 
@@ -14,7 +14,6 @@ export default class DatabaseConfigFactory {
     lambdaParameterSecretClient: LambdaParameterSecretClient
   ) {
     this.environmentAccessor = environmentAccessor;
-
     this.lambdaParameterSecretClient = lambdaParameterSecretClient;
   }
 
@@ -31,6 +30,7 @@ export default class DatabaseConfigFactory {
       password: secret.password,
       port: Number.parseInt(this.environmentAccessor.get('DB_PORT')),
       database: this.environmentAccessor.get('DB_DATABASE_NAME'),
+      ssl: true,
     };
 
     return dbConfig;

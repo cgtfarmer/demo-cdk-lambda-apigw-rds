@@ -1,5 +1,6 @@
 
 export default interface DatabaseClient {
+
   initConnection(): void;
 
   executeStatement(sql: string): Promise<any[]>;

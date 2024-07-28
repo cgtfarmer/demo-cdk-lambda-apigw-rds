@@ -4,7 +4,7 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Context, Handler } fro
 import DependencyGraph from './config/dependency-graph';
 
 export const handler: Handler =
-  async ( event: APIGatewayProxyEventV2, context: Context): Promise<APIGatewayProxyResultV2> => {
+  async (event: APIGatewayProxyEventV2, context: Context): Promise<APIGatewayProxyResultV2> => {
 
   const dependencyGraph = await DependencyGraph.getInstance();
 

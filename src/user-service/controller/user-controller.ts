@@ -1,14 +1,15 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import UserRepository from '../repository/user-repository';
+import User from '../dto/user';
+import UserService from '../service/user-service';
 
 export default class UserController {
 
-  private readonly userRepository: UserRepository;
+  private readonly userService: UserService;
 
   private readonly headers: Record<string, string>;
 
-  constructor(userRepository: UserRepository) {
-    this.userRepository = userRepository;
+  constructor(userService: UserService) {
+    this.userService = userService;
 
     this.headers = {
       'Content-Type': 'application/json',
@@ -18,7 +19,7 @@ export default class UserController {
   public async index(event: APIGatewayProxyEventV2) {
     console.log('[UserController#index]');
 
-    const body = await this.userRepository.findAll();
+    const body = await this.userService.findAll();
 
     const response: APIGatewayProxyResultV2 = {
       statusCode: 200,
@@ -38,9 +39,9 @@ export default class UserController {
 
     console.log(`[UserController#create] body: ${eventBody}`);
 
-    const requestJson = JSON.parse(eventBody);
+    const requestJson: User = JSON.parse(eventBody);
 
-    const body = this.userRepository.create(requestJson);
+    const body = await this.userService.create(requestJson);
 
     const response = {
       statusCode: 201,
@@ -60,7 +61,7 @@ export default class UserController {
 
     console.log(`[UserController#show] ${eventId}`);
 
-    const body = await this.userRepository.findById(Number.parseInt(eventId));
+    const body = await this.userService.findById(Number.parseInt(eventId));
 
     const response = {
       statusCode: 200,
@@ -83,11 +84,11 @@ export default class UserController {
     console.log(`[UserController#update] id:${eventId}`);
     console.log(`[UserController#update] body:${eventBody}`);
 
-    const requestJson = JSON.parse(eventBody);
+    const requestJson: User = JSON.parse(eventBody);
 
-    requestJson.id = eventId;
+    requestJson.id = Number.parseInt(eventId);
 
-    const body = await this.userRepository.update(requestJson);
+    const body = await this.userService.update(requestJson);
 
     const response = {
       statusCode: 200,
@@ -107,7 +108,7 @@ export default class UserController {
 
     console.log(`[UserController#destroy] ${eventId}`);
 
-    await this.userRepository.destroy(Number.parseInt(eventId));
+    await this.userService.destroy(Number.parseInt(eventId));
 
     const response = {
       statusCode: 200,

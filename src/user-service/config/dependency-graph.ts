@@ -5,13 +5,21 @@ import DatabaseConfigFactory from '../factory/database-config-factory';
 import LambdaParameterSecretClient from '../accessor/lambda-parameter-secret-client';
 import EnvironmentAccessor from '../accessor/environment-accessor';
 import UserController from '../controller/user-controller';
+import UserMapper from '../mapper/user-mapper';
+import UserService from '../service/user-service';
 
 export default class DependencyGraph {
 
   private static singleton: DependencyGraph;
 
   public static async getInstance() {
-    if (DependencyGraph.singleton) return this.singleton;
+    await DependencyGraph.init();
+
+    return DependencyGraph.singleton;
+  }
+
+  public static async init() {
+    if (DependencyGraph.singleton) return;
 
     const environmentAccessor = new EnvironmentAccessor();
 
@@ -32,11 +40,13 @@ export default class DependencyGraph {
 
     const userRepository = new UserRepository(postgresClient);
 
-    const userController = new UserController(userRepository);
+    const userMapper = new UserMapper();
+
+    const userService = new UserService(userRepository, userMapper);
+
+    const userController = new UserController(userService);
 
     DependencyGraph.singleton = new DependencyGraph(userController);
-
-    return DependencyGraph.singleton;
   }
 
   constructor(public readonly userController: UserController) {
