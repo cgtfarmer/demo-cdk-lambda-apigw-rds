@@ -1,14 +1,14 @@
 // Runtime: Node.js 18.x
 
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Context, Handler } from 'aws-lambda';
-import UserControllerFactory from './factory/user-controller-factory';
-
-const userControllerFactory = new UserControllerFactory();
+import DependencyGraph from './config/dependency-graph';
 
 export const handler: Handler =
   async ( event: APIGatewayProxyEventV2, context: Context): Promise<APIGatewayProxyResultV2> => {
 
-  const userController = await userControllerFactory.create();
+  const dependencyGraph = await DependencyGraph.getInstance();
+
+  const userController = dependencyGraph.userController;
 
   console.log(`ROUTE: ${event.routeKey}`);
 

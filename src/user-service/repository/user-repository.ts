@@ -1,17 +1,12 @@
 import DatabaseClient from './database-client';
-import User from '../model/user';
-import UserMapper from '../mapper/user-mapper';
+import User from '../dto/user';
 
 export default class UserRepository {
 
   private readonly dbClient: DatabaseClient;
 
-  private readonly userMapper: UserMapper;
-
-  constructor(dbClient: DatabaseClient, userMapper: UserMapper) {
+  constructor(dbClient: DatabaseClient) {
     this.dbClient = dbClient;
-
-    this.userMapper = userMapper;
   }
 
   public async findAll() {
@@ -24,13 +19,11 @@ export default class UserRepository {
 
     await this.dbClient.initConnection();
 
-    const results = await this.dbClient.executeStatement(sql);
+    const results: User[] = await this.dbClient.executeStatement(sql);
 
     await this.dbClient.endConnection();
 
-    const users = results.map(e => this.userMapper.fromAny(e));
-
-    return users;
+    return results;
   }
 
   public async findById(id: number) {
@@ -46,13 +39,11 @@ export default class UserRepository {
 
     await this.dbClient.initConnection();
 
-    const results = await this.dbClient.executeStatementWithParams(sql, values);
+    const results: User[] = await this.dbClient.executeStatementWithParams(sql, values);
 
     await this.dbClient.endConnection();
 
-    const users = results.map(e => this.userMapper.fromAny(e));
-
-    return users[0];
+    return results[0];
   }
 
   public async create(user: User) {

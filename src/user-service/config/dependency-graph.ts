@@ -1,24 +1,28 @@
-import { Client, ClientConfig } from 'pg';
+import { Client } from 'pg';
 import PostgresClient from '../accessor/postgres-client';
-import UserMapper from '../mapper/user-mapper';
 import UserRepository from '../repository/user-repository';
-import DatabaseConfigProvider from '../accessor/database-config-provider';
+import DatabaseConfigFactory from '../factory/database-config-factory';
 import LambdaParameterSecretClient from '../accessor/lambda-parameter-secret-client';
 import EnvironmentAccessor from '../accessor/environment-accessor';
 import UserController from '../controller/user-controller';
 
-export default class UserControllerFactory {
+export default class DependencyGraph {
 
-  constructor() {}
+  private static singleton: DependencyGraph;
 
-  public async create() {
+  public static async getInstance() {
+    if (DependencyGraph.singleton) return this.singleton;
+
     const environmentAccessor = new EnvironmentAccessor();
 
     const awsSessionToken = environmentAccessor.get('AWS_SESSION_TOKEN');
 
     const lambdaParameterSecretClient = new LambdaParameterSecretClient(awsSessionToken);
 
-    const dbConfigProvider = new DatabaseConfigProvider(environmentAccessor, lambdaParameterSecretClient);
+    const dbConfigProvider = new DatabaseConfigFactory(
+      environmentAccessor,
+      lambdaParameterSecretClient
+    );
 
     const dbConfig = await dbConfigProvider.create();
 
@@ -26,10 +30,15 @@ export default class UserControllerFactory {
 
     const postgresClient = new PostgresClient(dbClient);
 
-    const userMapper = new UserMapper();
+    const userRepository = new UserRepository(postgresClient);
 
-    const userRepository = new UserRepository(postgresClient, userMapper);
+    const userController = new UserController(userRepository);
 
-    return new UserController(userRepository);
+    DependencyGraph.singleton = new DependencyGraph(userController);
+
+    return DependencyGraph.singleton;
+  }
+
+  constructor(public readonly userController: UserController) {
   }
 }

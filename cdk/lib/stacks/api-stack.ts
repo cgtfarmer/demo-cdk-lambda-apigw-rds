@@ -5,7 +5,7 @@ import { ParamsAndSecretsLayerVersion, ParamsAndSecretsLogLevel, ParamsAndSecret
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { CorsHttpMethod, HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
-import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Port, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { DatabaseProxy } from 'aws-cdk-lib/aws-rds';
 import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
 
@@ -56,6 +56,7 @@ export class ApiStack extends Stack {
 
     props.rdsSecret.grantRead(demoLambda);
     props.rdsProxy.grantConnect(demoLambda);
+    // props.rdsProxy.connections.allowFrom(demoLambda, Port.POSTGRES);
 
     const demoLambdaIntegration =
       new HttpLambdaIntegration('DemoLambdaIntegration', demoLambda);

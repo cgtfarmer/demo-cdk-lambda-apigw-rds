@@ -6,7 +6,6 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.CloudFormationCustomResourceEvent;
 import com.cgtfarmer.demo.config.DependencyGraph;
-import com.cgtfarmer.demo.config.DependencyGraphFactory;
 import com.cgtfarmer.demo.dto.AsyncLambdaResponse;
 import com.cgtfarmer.demo.exception.ExceptionUtils;
 import liquibase.Contexts;
@@ -29,10 +28,8 @@ public class Handler implements RequestHandler<CloudFormationCustomResourceEvent
   ) {
     LambdaLogger logger = context.getLogger();
 
-    logger.log("Hello, world!");
-
     try {
-      DependencyGraph graph = new DependencyGraphFactory().create(logger);
+      DependencyGraph graph = DependencyGraph.getInstance();
 
       Liquibase liquibaseClient = graph.getLiquibaseClient();
 

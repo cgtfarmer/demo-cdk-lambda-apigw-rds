@@ -27,7 +27,10 @@ public class SecretAccessor {
         secretId
     );
 
-    DbSecret secret = this.mapper.readValue(secretResponse.getSecretString(), DbSecret.class);
+    DbSecret secret = this.mapper.readValue(
+        secretResponse.getSecretString(),
+        DbSecret.class
+    );
 
     return secret;
   }

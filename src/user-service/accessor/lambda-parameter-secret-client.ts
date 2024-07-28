@@ -1,3 +1,4 @@
+import SecretsManagerResponse from '../dto/SecretsManagerResponse';
 
 export default class LambdaParameterSecretClient {
 
@@ -21,7 +22,7 @@ export default class LambdaParameterSecretClient {
       headers: this.headers,
     });
 
-    const body = results.json();
+    const body: SecretsManagerResponse = await results.json();
 
     return body;
   }

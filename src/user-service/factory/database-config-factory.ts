@@ -1,8 +1,9 @@
-import { ClientConfig } from "pg";
-import EnvironmentAccessor from "./environment-accessor";
-import LambdaParameterSecretClient from "./lambda-parameter-secret-client";
+import { ClientConfig } from 'pg';
+import EnvironmentAccessor from '../accessor/environment-accessor';
+import LambdaParameterSecretClient from '../accessor/lambda-parameter-secret-client';
+import DbSecret from '../dto/DbSecret';
 
-export default class DatabaseConfigProvider {
+export default class DatabaseConfigFactory {
 
   private readonly environmentAccessor: EnvironmentAccessor;
 
@@ -20,7 +21,9 @@ export default class DatabaseConfigProvider {
   public async create() {
     const dbCredsSecretId = this.environmentAccessor.get('DB_CREDS_SECRET_ID');
 
-    const secret = await this.lambdaParameterSecretClient.getSecret(dbCredsSecretId);
+    const secretsManagerResponse = await this.lambdaParameterSecretClient.getSecret(dbCredsSecretId);
+
+    const secret: DbSecret = JSON.parse(secretsManagerResponse.SecretString);
 
     const dbConfig: ClientConfig = {
       host: this.environmentAccessor.get('DB_HOSTNAME'),

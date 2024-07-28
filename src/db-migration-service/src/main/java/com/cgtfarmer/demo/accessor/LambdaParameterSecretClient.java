@@ -1,6 +1,5 @@
 package com.cgtfarmer.demo.accessor;
 
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.cgtfarmer.demo.dto.SecretsManagerResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -20,10 +19,7 @@ public class LambdaParameterSecretClient {
 
   private final ObjectMapper mapper;
 
-  private final LambdaLogger logger;
-
-  public LambdaParameterSecretClient(LambdaLogger logger, HttpClient httpClient, ObjectMapper mapper) {
-    this.logger = logger;
+  public LambdaParameterSecretClient(HttpClient httpClient, ObjectMapper mapper) {
     this.httpClient = httpClient;
     this.mapper = mapper;
   }
@@ -44,9 +40,6 @@ public class LambdaParameterSecretClient {
     );
 
     String body = response.body();
-
-    this.logger.log("Secret Response Body:");
-    this.logger.log(body);
 
     SecretsManagerResponse mappedResponse = mapper.readValue(body, SecretsManagerResponse.class);
 
