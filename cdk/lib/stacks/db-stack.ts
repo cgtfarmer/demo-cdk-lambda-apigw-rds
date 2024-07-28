@@ -78,7 +78,6 @@ export class DbStack extends Stack {
 
     this.rdsPort = rdsInstance.dbInstanceEndpointPort;
 
-    // Create an RDS Proxy
     this.rdsProxy = rdsInstance.addProxy('RdsProxy', {
       secrets: [rdsInstance.secret],
       debugLogging: true,
@@ -106,7 +105,7 @@ export class DbStack extends Stack {
             '-c',
            'mvn clean install && cp /asset-input/target/demo-cdk-lambda-java-0.0.1.jar /asset-output/'
           ],
-          // NOTE: Can mount local .m2 repo to avoid re-downloading all the dependencies
+          // Mounting local ~/.m2 repo to avoid re-downloading all the dependencies
           volumes: [
             {
               hostPath: join(homedir(), '.m2/repository'),
