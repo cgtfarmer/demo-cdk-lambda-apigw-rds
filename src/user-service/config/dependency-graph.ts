@@ -13,13 +13,7 @@ export default class DependencyGraph {
   private static singleton: DependencyGraph;
 
   public static async getInstance() {
-    await DependencyGraph.init();
-
-    return DependencyGraph.singleton;
-  }
-
-  public static async init() {
-    if (DependencyGraph.singleton) return;
+    if (DependencyGraph.singleton) return DependencyGraph.singleton;
 
     const environmentAccessor = new EnvironmentAccessor();
 
@@ -47,6 +41,8 @@ export default class DependencyGraph {
     const userController = new UserController(userService);
 
     DependencyGraph.singleton = new DependencyGraph(userController);
+
+    return DependencyGraph.singleton;
   }
 
   constructor(public readonly userController: UserController) {

@@ -73,7 +73,7 @@ export default class UserRepository {
           last_name = $2,
           age = $3,
           weight = $4,
-          smoker = $5,
+          smoker = $5
       WHERE id = $6
     `;
 
@@ -96,7 +96,7 @@ export default class UserRepository {
 
     const sql = `
       DELETE FROM users
-      WHERE id = ?
+      WHERE id = $1
     `;
 
     const values = [String(id)];
