@@ -1,6 +1,6 @@
 # CDK Lambda APIGW RDS
 
-This is a demo showing how to deploy a TypeScript Lambda with CRUD functionality behind an API Gateway (HTTP API), backed by an RDS database instance (accessed with RDS Proxy). DB credentials are managed by Secrets Manager and accessed via "AWS Parameters and Secrets Lambda Extension"
+This is a demo showing how to deploy a TypeScript Lambda with CRUD functionality behind an API Gateway (HTTP API), backed by an RDS database instance (accessed with RDS Proxy). DB credentials are managed by Secrets Manager and accessed via "AWS Parameters and Secrets Lambda Extension". Database schema migrations are managed via Liquibase in a TriggerFunction construct.
 
 ## Prerequisites
 
@@ -28,6 +28,10 @@ This is a demo showing how to deploy a TypeScript Lambda with CRUD functionality
 
 `cdk deploy DbStack`
 
-2. Deploy API Stack
+3. Deploy DB Migration Stack
+
+`cdk deploy DbMigrationStack`
+
+4. Deploy API Stack
 
 `cdk deploy ApiStack`
